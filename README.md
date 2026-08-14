@@ -157,9 +157,12 @@ print(c.noerok)
 - Tree-sitter 캡처. `@variable.parameter`, `@keyword.return`, `@string.escape`,
   `@markup.heading.*`, `@constructor` 포함
 - LSP semantic token. language server가 붙은 뒤에도 색이 고정된다
-- gitsigns, telescope, nvim-cmp, blink.cmp, neo-tree, nvim-tree,
-  indent-blankline v3, which-key, nvim-notify, noice, flash, leap, hop,
-  bufferline, lazy, mason, todo-comments
+- LazyVim 기본 구성 — snacks.nvim(피커·대시보드·알림·입력·들여쓰기),
+  fzf-lua, trouble, which-key, mini.icons, bufferline, noice,
+  todo-comments, render-markdown
+- 그 외 — gitsigns, telescope, nvim-cmp, blink.cmp, neo-tree, nvim-tree,
+  indent-blankline v3, nvim-notify, flash, leap, hop, lazy, mason,
+  nvim-dap / nvim-dap-ui, treesitter-context, mini.statusline
 
 ## 구조
 
