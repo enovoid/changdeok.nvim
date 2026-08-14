@@ -1,0 +1,34 @@
+# RULES.md 의 규칙 4(대비는 측정한다)와 규칙 7(검증)을 CI 로 강제한다.
+# 사람이 잊어도 push 마다 돌아간다.
+name: contrast
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  contrast:
+    name: 대비 검증
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      # 표준 라이브러리만 쓰므로 설치할 의존성이 없다.
+      - run: python3 scripts/contrast_check.py
+
+  load:
+    name: 세 변형 로드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+      # nvim --headless "+colorscheme ..." +qa 를 그대로 쓰면 안 된다.
+      # 테마가 없든 lua 에 문법 에러가 있든 종료 코드 0 을 돌려주기 때문에
+      # CI 가 항상 초록불이 된다. load_check.lua 가 pcall 로 잡아서
+      # os.exit(1) 로 알린다.
+      - run: nvim --headless --clean --cmd "set rtp+=$PWD" -l scripts/load_check.lua
