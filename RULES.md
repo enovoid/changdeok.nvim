@@ -127,11 +127,18 @@ scripts/contrast_check.py      게이트
 
 ```sh
 python3 scripts/contrast_check.py                 # 종료 코드 0
-luac -p lua/changdeok/*.lua colors/*.lua          # 문법
-nvim --headless "+colorscheme changdeok-injeong" \
-     "+colorscheme changdeok-buyong" \
-     "+colorscheme changdeok-nakseon" +qa         # 세 변형 모두 에러 없이
+luac -p lua/changdeok/*.lua colors/*.lua          # 문법 (luac 이 없으면 건너뛴다)
+nvim --headless --clean --cmd "set rtp+=$PWD" \
+     -l scripts/load_check.lua                    # 세 변형 로드. 정상 0 / 실패 1
 ```
+
+**세 번째 명령을 `nvim --headless "+colorscheme ..." +qa` 로 되돌리지 마라.**
+그 형태는 존재하지 않는 colorscheme 을 부르든 lua 문법 에러가 나든 **항상 종료
+코드 0** 을 돌려준다. 무엇이 깨져도 통과하는 가짜 검사가 된다. 확인한 사실이다.
+`scripts/load_check.lua` 는 `pcall` 로 감싸고 직접 `os.exit(1)` 을 부른다.
+
+`luac` 은 이 머신에 없다. 없으면 건너뛰어도 되는데, 문법 에러는 위 로드 검증이
+어차피 잡기 때문이다.
 
 실패하면 원인을 짚고 멈춘다. 우회하거나 조용히 넘어가지 않는다.
 
