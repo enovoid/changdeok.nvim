@@ -168,6 +168,7 @@ lua/changdeok/palette.lua      세 변형의 색 정의. 색을 고칠 땐 여�
 lua/changdeok/highlights.lua   하이라이트 그룹 매핑
 lua/changdeok/init.lua         setup / load / cycle
 colors/changdeok-*.lua         :colorscheme 진입점
+lazy.lua                       lazy.nvim 용 기본 스펙 (lazy=false, priority=1000)
 scripts/contrast_check.py      검증
 .github/workflows/contrast.yml CI
 ```
