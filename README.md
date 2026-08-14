@@ -76,13 +76,21 @@ python3 scripts/contrast_check.py   # 미달이 하나라도 있으면 종료 �
 
 ## 설치
 
-lazy.nvim:
+lazy.nvim — 한 줄이면 된다:
+
+```lua
+{ "enovoid/changdeok.nvim" }
+```
+
+저장소 루트의 `lazy.lua` 가 `lazy = false` 와 `priority = 1000` 을 자동으로
+붙여준다. 컬러스킴에서 이 둘을 빠뜨리면 거의 항상 깨지기 때문에, 사용자가
+기억하지 않아도 되게 저장소 쪽에서 챙긴다.
+
+기본값은 `injeong` 변형이다. 다른 변형이나 옵션을 쓰려면:
 
 ```lua
 {
-  "계정명/changdeok.nvim",
-  lazy = false,
-  priority = 1000,
+  "enovoid/changdeok.nvim",
   opts = {
     variant = "injeong",     -- "injeong" | "buyong" | "nakseon"
     transparent = false,
@@ -94,11 +102,25 @@ lazy.nvim:
     require("changdeok").setup(opts)
   end,
 },
+```
+
+`vim.cmd.colorscheme` 을 `config` 안에서 직접 부르지 않는다는 점에 주의.
+순정 Neovim이라면 init.lua에서 부르면 되고:
+
+```lua
+vim.cmd.colorscheme("changdeok-injeong")
+```
+
+LazyVim이라면 colorscheme을 LazyVim이 자체 관리하므로 블록을 하나 더 둔다:
+
+```lua
 { "LazyVim/LazyVim", opts = { colorscheme = "changdeok-injeong" } },
 ```
 
-LazyVim은 colorscheme을 자체 관리하므로 두 번째 블록이 필요하다. `vim.cmd.colorscheme`을
-직접 호출하면 나중에 기본값으로 덮어써진다.
+LazyVim은 모든 스펙의 `opts.colorscheme` 을 모은 뒤 시작 마지막에 한 번
+적용한다. 그래서 `config` 에서 미리 부른 colorscheme은 나중에 덮어써진다.
+다른 테마 스펙(kanagawa 등)이 `opts.colorscheme` 을 설정하고 있으면 충돌하니
+그쪽을 먼저 지워야 한다.
 
 세 변형 순환:
 
