@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>창덕궁 — changdeok.nvim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ece5d6; --paper-2:#e2dbc9; --paper-3:#f4efe3;
+  --ink:#2b2721; --ink-dim:#575043; --rule:#c0b6a0;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --serif:'Noto Serif KR','Nanum Myeongjo',ui-serif,Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  line-height:1.75;
+  background-image:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.012) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.008) 0 1px,transparent 1px 5px);
+}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px 96px}
+
+header{position:relative;padding:64px 0 36px}
+header::before{content:"";position:absolute;left:-20px;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,#9a4636,#7c591c 60%,transparent)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-dim);margin:0 0 18px}
+h1{font-size:clamp(44px,13vw,76px);font-weight:900;line-height:1;margin:0;letter-spacing:-.02em}
+h1 .han{display:block;font-size:.28em;font-weight:400;color:#9a4636;letter-spacing:.5em;margin-top:14px}
+.lede{font-size:17px;max-width:54ch;margin:26px 0 0;color:var(--ink-dim)}
+.lede b{color:var(--ink);font-weight:600}
+
+h2{font-size:13px;font-family:var(--mono);font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink-dim);margin:76px 0 6px;
+  padding-bottom:10px;border-bottom:1px solid var(--rule)}
+.place{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:22px 0 4px}
+.place .kr{font-size:30px;font-weight:900;letter-spacing:-.01em}
+.place .hj{font-family:var(--serif);font-size:14px;color:var(--ink-dim);letter-spacing:.32em}
+.place .cmd{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-dim)}
+p{margin:0 0 16px;font-size:16px}
+.note{font-size:14.5px;color:var(--ink-dim);margin-bottom:14px}
+
+.win{border-radius:6px;overflow:hidden;margin:14px 0 4px;box-shadow:0 12px 30px rgba(43,39,33,.18)}
+.win .bar{font-family:var(--mono);font-size:11px;padding:9px 14px;display:flex;
+  justify-content:space-between;letter-spacing:.06em}
+pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.85;padding:16px 14px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ln{opacity:.42;user-select:none;display:inline-block;width:2.1em}
+.strip{display:flex;height:8px;border-radius:0 0 6px 6px;overflow:hidden;margin-top:-4px}
+.strip div{flex:1}
+
+/* 인정전 */
+.injeong pre{background:#191614;color:#e0d5c2}
+.injeong .bar{background:#221d1a;color:#a89a86;border-bottom:1px solid #3d342d}
+.injeong .cur{background:#1e1a17;display:block}
+.injeong .sel{background:#332b26}
+.injeong .c{color:#908473;font-style:italic}
+.injeong .k,.injeong .kr2{color:#d08a72} .injeong .kr2{font-weight:700}
+.injeong .f{color:#dfbc7d} .injeong .s{color:#94b391} .injeong .t{color:#8fb0cc}
+.injeong .n{color:#bb98b6} .injeong .e{color:#90bab0;font-weight:700}
+.injeong .p{color:#d69f95} .injeong .o{color:#a89a86} .injeong .pr{color:#90bab0}
+.injeong .err{text-decoration:underline wavy #d9705f;text-underline-offset:3px}
+
+/* 부용지 */
+.buyong pre{background:#141a19;color:#cfd6cc}
+.buyong .bar{background:#1b2321;color:#99a49b;border-bottom:1px solid #35443f}
+.buyong .cur{background:#18201e;display:block}
+.buyong .sel{background:#2a3733}
+.buyong .c{color:#7e8c84;font-style:italic}
+.buyong .k,.buyong .kr2{color:#d08878} .buyong .kr2{font-weight:700}
+.buyong .f{color:#cbb87a} .buyong .s{color:#8fb894} .buyong .t{color:#82b0bd}
+.buyong .n{color:#ac9ac0} .buyong .e{color:#85bfb2;font-weight:700}
+.buyong .p{color:#c79f99} .buyong .o{color:#99a49b} .buyong .pr{color:#85bfb2}
+.buyong .err{text-decoration:underline wavy #d4705f;text-underline-offset:3px}
+
+/* 낙선재 */
+.nakseon pre{background:#ece5d6;color:#2b2721}
+.nakseon .bar{background:#e2dbc9;color:#575043;border-bottom:1px solid #c0b6a0}
+.nakseon .cur{background:#e5dfcf;display:block}
+.nakseon .sel{background:#d4cbb4}
+.nakseon .c{color:#655e50;font-style:italic}
+.nakseon .k,.nakseon .kr2{color:#9a4636} .nakseon .kr2{font-weight:700}
+.nakseon .f{color:#7c591c} .nakseon .s{color:#40694a} .nakseon .t{color:#33608a}
+.nakseon .n{color:#75477c} .nakseon .e{color:#326661;font-weight:700}
+.nakseon .p{color:#8f4744} .nakseon .o{color:#575043} .nakseon .pr{color:#326661}
+.nakseon .err{text-decoration:underline wavy #9c2f22;text-underline-offset:3px}
+
+.obang{display:flex;margin:16px 0 6px;border-radius:3px;overflow:hidden;height:38px}
+.obang div{flex:1}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-dim);font-weight:400}
+td.mono{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
+.install{background:var(--paper-3);border-left:3px solid #7c591c;padding:16px 18px;
+  margin:16px 0;border-radius:0 4px 4px 0}
+.install pre{background:none;padding:0;font-size:12px;color:var(--ink)}
+footer{margin-top:76px;padding-top:22px;border-top:1px solid var(--rule);
+  font-size:13px;color:var(--ink-dim)}
+@media (max-width:520px){
+  .wrap{padding:0 16px 72px} header::before{left:-16px}
+  .place .cmd{margin-left:0;flex-basis:100%}
+  pre{font-size:11.5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Neovim colorscheme · 3 variants</p>
+  <h1>창덕궁<span class="han">昌 德 宮</span></h1>
+  <p class="lede">한 팔레트를 밝기만 바꿔 돌려쓰지 않았다. 창덕궁 안에서 <b>실제로 색 처리가 다른 세 장소</b>를
+  골라 각각 짰다. 단청이 가장 빽빽한 곳, 단청이 거의 없는 곳, 그리고 아예 칠하지 않은 곳.</p>
+</header>
+
+<h2>1 — 정전</h2>
+<div class="place"><span class="kr">인정전</span><span class="hj">仁政殿</span>
+  <span class="cmd">:colorscheme changdeok-injeong</span></div>
+<p class="note">모로단청이 가장 빽빽하게 올라간 건물. 밤에 등불이 들면 붉은 기둥과 금박 자리가 먼저 살아나고
+나머지는 어둠에 잠긴다. 그래서 배경에 붉은 기미를 남기고 진사와 석황을 앞에 세웠다. 셋 중 가장 따뜻하다.</p>
+<div class="win injeong">
+  <div class="bar"><span>sonar.lua</span><span>injeong · 인정전</span></div>
+<pre><code><span class="ln">1</span><span class="c">-- 반사파를 수집해 방위각으로 정렬한다</span>
+<span class="ln">2</span><span class="k">local</span> <span class="t">Sonar</span> <span class="o">=</span> {}
+<span class="ln">3</span>
+<span class="ln">4</span><span class="k">function</span> <span class="t">Sonar</span><span class="o">.</span><span class="f">ping</span>(<span class="p">origin</span><span class="o">,</span> <span class="p">radius</span>)
+<span class="ln">5</span>  <span class="k">local</span> hits <span class="o">=</span> <span class="f">query</span>(<span class="p">origin</span><span class="o">,</span> <span class="p">radius</span> <span class="o">*</span> <span class="n">1.5</span>)
+<span class="cur"><span class="ln">6</span>  <span class="k">if</span> <span class="o">#</span>hits <span class="o">==</span> <span class="n">0</span> <span class="k">then</span> <span class="kr2">return</span> <span class="n">nil</span> <span class="k">end</span></span>
+<span class="ln">7</span>
+<span class="ln">8</span>  <span class="k">for</span> <span class="o">_</span><span class="o">,</span> h <span class="k">in</span> <span class="f">ipairs</span>(hits) <span class="k">do</span>
+<span class="ln">9</span>    h<span class="o">.</span><span class="pr">bearing</span> <span class="o">=</span> <span class="t">math</span><span class="o">.</span><span class="f">atan2</span>(h<span class="o">.</span><span class="pr">y</span><span class="o">,</span> h<span class="o">.</span><span class="pr">x</span>)
+<span class="ln">10</span>    h<span class="o">.</span><span class="pr">decay</span> <span class="o">=</span> <span class="n">0.94</span> <span class="o">^</span> h<span class="o">.</span><span class="pr">dist</span>
+<span class="ln">11</span>  <span class="k">end</span>
+<span class="ln">12</span>
+<span class="ln">13</span>  <span class="f">log</span>(<span class="s">"접촉 %d건<span class="e">\n</span>"</span><span class="o">,</span> <span class="o">#</span>hits)
+<span class="ln">14</span>  <span class="kr2">return</span> <span class="f">soort</span><span class="err"></span>(<span class="sel">hits</span>)
+<span class="ln">15</span><span class="k">end</span>
+</code></pre>
+</div>
+<div class="strip">
+  <div style="background:#d08a72"></div><div style="background:#dfbc7d"></div>
+  <div style="background:#94b391"></div><div style="background:#8fb0cc"></div>
+  <div style="background:#bb98b6"></div><div style="background:#90bab0"></div>
+  <div style="background:#d69f95"></div>
+</div>
+
+<h2>2 — 후원</h2>
+<div class="place"><span class="kr">부용지</span><span class="hj">芙蓉池</span>
+  <span class="cmd">:colorscheme changdeok-buyong</span></div>
+<p class="note">여기엔 단청이 거의 없다. 물빛과 이끼, 소나무, 화강암이 색의 전부고 가을 단풍 한 점이
+유일한 난색이다. 배경을 청록으로 눕히고 난색은 keyword 하나에만 남겼다. 셋 중 가장 차분하다.</p>
+<div class="win buyong">
+  <div class="bar"><span>sonar.lua</span><span>buyong · 부용지</span></div>
+<pre><code><span class="ln">1</span><span class="c">-- 반사파를 수집해 방위각으로 정렬한다</span>
+<span class="ln">2</span><span class="k">local</span> <span class="t">Sonar</span> <span class="o">=</span> {}
+<span class="ln">3</span>
+<span class="ln">4</span><span class="k">function</span> <span class="t">Sonar</span><span class="o">.</span><span class="f">ping</span>(<span class="p">origin</span><span class="o">,</span> <span class="p">radius</span>)
+<span class="ln">5</span>  <span class="k">local</span> hits <span class="o">=</span> <span class="f">query</span>(<span class="p">origin</span><span class="o">,</span> <span class="p">radius</span> <span class="o">*</span> <span class="n">1.5</span>)
+<span class="cur"><span class="ln">6</span>  <span class="k">if</span> <span class="o">#</span>hits <span class="o">==</span> <span class="n">0</span> <span class="k">then</span> <span class="kr2">return</span> <span class="n">nil</span> <span class="k">end</span></span>
+<span class="ln">7</span>
+<span class="ln">8</span>  <span class="k">for</span> <span class="o">_</span><span class="o">,</span> h <span class="k">in</span> <span class="f">ipairs</span>(hits) <span class="k">do</span>
+<span class="ln">9</span>    h<span class="o">.</span><span class="pr">bearing</span> <span class="o">=</span> <span class="t">math</span><span class="o">.</span><span class="f">atan2</span>(h<span class="o">.</span><span class="pr">y</span><span class="o">,</span> h<span class="o">.</span><span class="pr">x</span>)
+<span class="ln">10</span>    h<span class="o">.</span><span class="pr">decay</span> <span class="o">=</span> <span class="n">0.94</span> <span class="o">^</span> h<span class="o">.</span><span class="pr">dist</span>
+<span class="ln">11</span>  <span class="k">end</span>
+<span class="ln">12</span>
+<span class="ln">13</span>  <span class="f">log</span>(<span class="s">"접촉 %d건<span class="e">\n</span>"</span><span class="o">,</span> <span class="o">#</span>hits)
+<span class="ln">14</span>  <span class="kr2">return</span> <span class="f">soort</span><span class="err"></span>(<span class="sel">hits</span>)
+<span class="ln">15</span><span class="k">end</span>
+</code></pre>
+</div>
+<div class="strip">
+  <div style="background:#d08878"></div><div style="background:#cbb87a"></div>
+  <div style="background:#8fb894"></div><div style="background:#82b0bd"></div>
+  <div style="background:#ac9ac0"></div><div style="background:#85bfb2"></div>
+  <div style="background:#c79f99"></div>
+</div>
+
+<h2>3 — 백골집</h2>
+<div class="place"><span class="kr">낙선재</span><span class="hj">樂善齋</span>
+  <span class="cmd">:colorscheme changdeok-nakseon</span></div>
+<p class="note">헌종이 사대부 주택 양식으로 지은 곳. 궁궐 안인데도 <b>단청을 하지 않았다.</b> 칠하지 않은
+소나무 결과 한지 창호, 황토 벽, 전돌의 회색이 전부다. 다른 변형의 명도를 뒤집은 게 아니라, 애초에 색
+처리가 다른 건물이라 안료 대신 재료의 색으로 짰다.</p>
+<div class="win nakseon">
+  <div class="bar"><span>sonar.lua</span><span>nakseon · 낙선재</span></div>
+<pre><code><span class="ln">1</span><span class="c">-- 반사파를 수집해 방위각으로 정렬한다</span>
+<span class="ln">2</span><span class="k">local</span> <span class="t">Sonar</span> <span class="o">=</span> {}
+<span class="ln">3</span>
+<span class="ln">4</span><span class="k">function</span> <span class="t">Sonar</span><span class="o">.</span><span class="f">ping</span>(<span class="p">origin</span><span class="o">,</span> <span class="p">radius</span>)
+<span class="ln">5</span>  <span class="k">local</span> hits <span class="o">=</span> <span class="f">query</span>(<span class="p">origin</span><span class="o">,</span> <span class="p">radius</span> <span class="o">*</span> <span class="n">1.5</span>)
+<span class="cur"><span class="ln">6</span>  <span class="k">if</span> <span class="o">#</span>hits <span class="o">==</span> <span class="n">0</span> <span class="k">then</span> <span class="kr2">return</span> <span class="n">nil</span> <span class="k">end</span></span>
+<span class="ln">7</span>
+<span class="ln">8</span>  <span class="k">for</span> <span class="o">_</span><span class="o">,</span> h <span class="k">in</span> <span class="f">ipairs</span>(hits) <span class="k">do</span>
+<span class="ln">9</span>    h<span class="o">.</span><span class="pr">bearing</span> <span class="o">=</span> <span class="t">math</span><span class="o">.</span><span class="f">atan2</span>(h<span class="o">.</span><span class="pr">y</span><span class="o">,</span> h<span class="o">.</span><span class="pr">x</span>)
+<span class="ln">10</span>    h<span class="o">.</span><span class="pr">decay</span> <span class="o">=</span> <span class="n">0.94</span> <span class="o">^</span> h<span class="o">.</span><span class="pr">dist</span>
+<span class="ln">11</span>  <span class="k">end</span>
+<span class="ln">12</span>
+<span class="ln">13</span>  <span class="f">log</span>(<span class="s">"접촉 %d건<span class="e">\n</span>"</span><span class="o">,</span> <span class="o">#</span>hits)
+<span class="ln">14</span>  <span class="kr2">return</span> <span class="f">soort</span><span class="err"></span>(<span class="sel">hits</span>)
+<span class="ln">15</span><span class="k">end</span>
+</code></pre>
+</div>
+<div class="strip">
+  <div style="background:#9a4636"></div><div style="background:#7c591c"></div>
+  <div style="background:#40694a"></div><div style="background:#33608a"></div>
+  <div style="background:#75477c"></div><div style="background:#326661"></div>
+  <div style="background:#8f4744"></div>
+</div>
+
+<h2>세 곳을 비교하면</h2>
+<p>색은 달라도 <b>매핑은 고정</b>이다. 어느 변형을 쓰든 진사 계열이 keyword, 석황 계열이 function,
+뇌록 계열이 string이다. 진사는 기둥, 곧 구조를 지탱하는 색이라 keyword에 붙였고, 석황은 금박 자리에
+쓰인 강조색이라 function에, 뇌록은 단청의 바탕칠이라 가장 넓은 면적을 차지하는 string에 붙였다.
+색이 바뀌어도 코드를 읽는 습관은 바뀌지 않아야 한다.</p>
+<table>
+  <tr><th></th><th>인정전</th><th>부용지</th><th>낙선재</th></tr>
+  <tr><td>배경</td><td class="mono">#191614</td><td class="mono">#141a19</td><td class="mono">#ece5d6</td></tr>
+  <tr><td>성격</td><td>따뜻한 어둠</td><td>차분한 청록</td><td>한지 밝음</td></tr>
+  <tr><td>지배색</td><td>진사 · 석황</td><td>뇌록 · 벽</td><td>먹 · 소나무</td></tr>
+  <tr><td>어울리는 때</td><td>밤 작업</td><td>장시간 집중</td><td>낮, 밝은 방</td></tr>
+</table>
+
+<h2>쓰지 않은 색</h2>
+<div class="obang">
+  <div style="background:#1b4f9c"></div><div style="background:#c8102e"></div>
+  <div style="background:#f2c200"></div><div style="background:#f4f1ea"></div>
+  <div style="background:#1a1a1a"></div>
+</div>
+<p class="note">오방색 청·적·황·백·흑. 방위와 상징을 <b>멀리서</b> 읽히게 하려고 채도를 끝까지 올린
+의례용 팔레트다. 색동과 궁궐 외부 단청처럼 원거리 시인성이 목적인 곳에 쓰였지, 30cm 앞에서 여덟
+시간 보라고 만든 색이 아니다. 세 변형 모두 이 다섯을 구문 강조에서 제외했다.</p>
+<p class="note">원색이 돌아오는 곳은 진단 메시지 하나뿐이고, 그것도 배경 블록이 아니라 물결 밑줄로
+칠한다. 배경 블록은 코드를 가린다.</p>
+
+<h2>대비</h2>
+<p>색을 눈대중으로 고르지 않았다. 세 변형 합쳐 전경/배경 <b>210쌍</b>을 측정한다. 본문 7:1,
+구문·UI 4.5:1, 선택 영역 3:1. <span class="mono">bg</span> 하나가 아니라
+<span class="mono">bg_dim · bg_float · bg_line</span>까지 네 배경 중 <b>가장 불리한 쌍</b> 기준이다.
+팝업이나 사이드바 위에서 대비가 깨지는 게 실제로 가장 흔한 실패 지점이라서.</p>
+<p class="note">창 경계와 들여쓰기 가이드만 1.4:1로 따로 뒀다. 정보를 전달하지 않는 장식 요소인데
+WCAG 3:1을 걸면 분할선이 본문보다 시끄러워진다.</p>
+
+<h2>설치</h2>
+<div class="install">
+<pre>{
+  "계정명/changdeok.nvim",
+  lazy = false,
+  priority = 1000,
+  opts = { variant = "injeong" },
+  config = function(_, opts)
+    require("changdeok").setup(opts)
+  end,
+},
+{ "LazyVim/LazyVim", opts = { colorscheme = "changdeok-injeong" } }</pre>
+</div>
+<p class="note">한 번 GitHub에 올려두면 그다음부터는 이 한 줄이 전부다.
+<span class="mono">:lua require("changdeok").cycle()</span>로 세 변형을 순환할 수 있다.</p>
+
+<footer>검사 210쌍 · 실패 0건 · <span class="mono">python3 scripts/contrast_check.py</span></footer>
+
+</div>
+</body>
+</html>
